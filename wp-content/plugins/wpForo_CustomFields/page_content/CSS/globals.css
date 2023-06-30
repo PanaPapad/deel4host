@@ -1,0 +1,8 @@
+/**
+ * This file contains global CSS rules that are applied to the entire page.
+*/
+
+/* This rule is used to disable the click event on an anchor element. */
+a.disableClick{
+    pointer-events: none;
+}
