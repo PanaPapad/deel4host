@@ -14,11 +14,15 @@ function process_form() {
     $field_default = sanitize_text_field($_POST['field_default']);
     $field_required = isset($_POST['field_required']) ? 1 : 0;
     $field_options = sanitize_text_field($_POST['field_options']);
+    $field_placeholder = sanitize_text_field($_POST['field_placeholder']);
+    $field_fa_icon = sanitize_text_field($_POST['field_fa-icon']);
     // Save the field data to the database
     $data = array(
         'field_name' => $field_name,
         'field_type' => $field_type,
         'field_label' => $field_label,
+        'field_placeholder' => $field_placeholder,
+        'field_fa-icon' => $field_fa_icon,
         'field_description' => $field_description,
         'field_default_value' => $field_default,
         'field_required' => $field_required,
