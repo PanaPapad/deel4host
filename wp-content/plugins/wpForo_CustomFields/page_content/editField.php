@@ -65,7 +65,7 @@ inject_css( $cssList )
 		</div>
 
 		<div class="form-row">
-			<div class="form-group col-md-6">
+			<div class="form-group col-md-4">
 				<label for="field_description">Field Description:</label>
 				<textarea id="field_description" name="field_description" class="form-control"></textarea>
 			</div>
