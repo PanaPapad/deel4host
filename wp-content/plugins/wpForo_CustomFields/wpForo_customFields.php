@@ -104,33 +104,61 @@ function on_activate() {
     include_once 'install.php';
 }
 function inject_wpforo_fields($fields, $type, $forum){
-    // Fetch the fields from the database
     global $wpdb;
-    $table_prefix = $wpdb->prefix;
-    $fields_table_name = $table_prefix . 'custom_wpForo_fields';
-    $fields['customBody'] = [
-        'fieldKey'       => 'customBody',
-        'type'           => 'text',
-        'isDefault'      => 1,
-        'isRemovable'    => 0,
-        'isRequired'     => 1,
-        'isEditable'     => 1,
-        'title'          => wpforo_phrase( 'Custom Field', false ),
-        'placeholder'    => wpforo_phrase( 'Custom Field', false ),
-        'minLength'      => 0,
-        'maxLength'      => 0,
-        'faIcon'         => '',
-        'name'           => 'Custom Body',
-        'cantBeInactive' => [ 'topic', 'post', 'comment', 'reply' ],
-        'canEdit'        => [1,2,3,4,5],
-        'canView'        => [1,2,3,4,5],
-        'can'            => '',
-        'isSearchable'   => 1,
-    ];
+    $fields_table_name = $wpdb->prefix . 'custom_wpForo_fields';
+    $query = "SELECT * FROM $fields_table_name";
+    $customFields = $wpdb->get_results($query);
+    for($i=0;$i<count($customFields);$i++){
+        $field = $customFields[$i];
+        $fields[$field->field_name] = [
+            'fieldKey'       => $field->field_name,
+            'type'           => $field->field_type,
+            'isDefault'      => 0,
+            'isRemovable'    => 1,
+            'isRequired'     => (int)$field->field_required,
+            'isEditable'     => 1,
+            'label'          => wpforo_phrase( $field->field_label, false ),
+            'title'          => wpforo_phrase( $field->field_label, false ),
+            'placeholder'    => wpforo_phrase( $field->field_placeholder, false ),
+            'minLength'      => 0,
+            'maxLength'      => 0,
+            'faIcon'         => $field->field_fa_icon,
+            'name'           => $field->field_name,
+            'cantBeInactive' => [ 'topic', 'post', 'comment', 'reply' ],
+            'canEdit'        => [1,2,3,4,5],
+            'canView'        => [1,2,3,4,5],
+            'can'            => '',
+            'isSearchable'   => 1,
+        ];
+    }
     return $fields;
 }
 function inject_wpforo_forms($fields, $forum, $guest){
-    $fields[0][0][2] = 'customBody';
+    global $wpdb;
+    $forum_form_table = $wpdb->prefix . 'custom_wpforo_forum_forms';
+    $form_fields_table = $wpdb->prefix . 'custom_wpforo_form_fields';
+    $fields_table = $wpdb->prefix . 'custom_wpforo_fields';
+
+    $formIdQuery = "SELECT form_id FROM $forum_form_table WHERE forum_id = {$forum['forumid']}";
+    $formId = $wpdb->get_var($formIdQuery);
+    //if there is no form for this forum, return the default fields
+    if(!$formId){
+        return $fields;
+    }
+
+    $formFieldsQuery = "SELECT field_id FROM $form_fields_table WHERE form_id = $formId";
+    $formFields = $wpdb->get_results($formFieldsQuery);
+    //if there are no fields for this form, return the default fields
+    if(!$formFields){
+        return $fields;
+    }
+
+    $fieldNames = [];
+    for($i=0;$i<count($formFields);$i++){
+        $fieldId = $formFields[$i]->field_id;
+        $fieldName = $wpdb->get_var("SELECT field_name FROM $fields_table WHERE id = $fieldId");
+        $fields[0][0][2+$i] = $fieldName;
+    }
     return $fields;
 }
 function add_custom_fields_to_post($postArgs, $forum){

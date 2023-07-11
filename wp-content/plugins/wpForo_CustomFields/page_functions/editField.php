@@ -15,20 +15,22 @@ function process_form() {
     $field_required = isset($_POST['field_required']) ? 1 : 0;
     $field_options = sanitize_text_field($_POST['field_options']);
     $field_placeholder = sanitize_text_field($_POST['field_placeholder']);
-    $field_fa_icon = sanitize_text_field($_POST['field_fa-icon']);
+    $field_fa_icon = sanitize_text_field($_POST['field_fa_icon']);
     // Save the field data to the database
     $data = array(
         'field_name' => $field_name,
         'field_type' => $field_type,
         'field_label' => $field_label,
         'field_placeholder' => $field_placeholder,
-        'field_fa-icon' => $field_fa_icon,
+        'field_fa_icon' => $field_fa_icon,
         'field_description' => $field_description,
         'field_default_value' => $field_default,
         'field_required' => $field_required,
         'field_options' => $field_options,
     );
     $data_format = array(
+        '%s',
+        '%s',
         '%s',
         '%s',
         '%s',
@@ -66,6 +68,7 @@ function process_form() {
     }
     if (!$success) {
         // There was an error saving your data
+        $error = $wpdb->last_error;
         wp_redirect(add_query_arg('custom_field_saved', '0',  $GLOBALS['noArgsUrl']));
         exit;
     }
