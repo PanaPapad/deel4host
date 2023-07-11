@@ -70,28 +70,6 @@ function presentMessages() {
         showToast(0, "Error", "Custom field could not be deleted.");
     }
 }
-
-function submitForm() {
-    const apiEndpoint = baseApiUrl+"edit-field.php";
-    const form = document.getElementById("editFieldForm");
-    const formData = new FormData(form);
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", apiEndpoint);
-    //Send data as form data
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    //Auth Bearer token
-    xhr.setRequestHeader('Authorization', `Basic ${btoa(`appPass:${token}`)}`);
-    xhr.onload = function () {
-        //Check if request was successful
-        if (xhr.status === 200) {
-            showToast(1, "Success", "Custom field saved successfully.");
-        }
-        else {
-            showToast(0, "Error", "Custom field could not be saved.");
-        }
-    }
-    xhr.send(formData);
-}
 const submitBtn = document.getElementById("submitBtn");
 //submitBtn.addEventListener("click", submitForm);
 presentMessages();

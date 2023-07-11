@@ -25,6 +25,9 @@
             ';document.getElementById("'.$scriptTagId.'").remove();} </script>';
         $GLOBALS['jsCallCounter']++;
     }
+    function injectObject($objectName, $object){
+        echo '<script> var ' . $objectName . ' = JSON.parse(\'' . json_encode($object) . '\'); </script>';
+    }
     function inject_css($cssList){
         foreach ($cssList as $cssfile) {
             echo '<link rel="stylesheet" href="'. plugin_dir_url(__FILE__). 'page_content/CSS/' . $cssfile . '">';
