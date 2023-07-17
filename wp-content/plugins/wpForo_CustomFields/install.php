@@ -14,12 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function check_for_tables(){
     // Check if the tables exist
     global $wpdb;
-    $table_prefix = $wpdb->prefix;
-    $fields_table_name = $table_prefix . 'custom_wpforo_fields';
-    $forms_table_name = $table_prefix . 'custom_wpforo_forms';
-    $junction_table_name = $table_prefix . 'custom_wpforo_form_fields';
-    $forum_form_table_name = $table_prefix . 'custom_wpforo_forum_forms';
-    $custom_post_table_name = $table_prefix . 'custom_wpforo_posts';
+    $tableNames = $GLOBALS['CUSTOM_WPFORO_TABLES'];
+    $fields_table_name = $tableNames['FIELDS'];
+    $forms_table_name = $tableNames['FORMS'];
+    $form_fields_table_name = $tableNames['FORM_FIELDS'];
+    $forum_forms_table_name = $tableNames['FORUM_FORMS'];
+    $custom_post_table_name = $tableNames['POSTS'];
     
     $fields_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$fields_table_name'") == $fields_table_name;
     if(!$fields_table_exists){
@@ -29,11 +29,11 @@ function check_for_tables(){
     if(!$forms_table_exists){
         create_form_table();
     }
-    $junction_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$junction_table_name'") == $junction_table_name;
+    $junction_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$form_fields_table_name'") == $form_fields_table_name;
     if(!$junction_table_exists){
         create_field_form_table();
     }
-    $forum_form_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$forum_form_table_name'") == $forum_form_table_name;
+    $forum_form_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$forum_forms_table_name'") == $forum_forms_table_name;
     if(!$forum_form_table_exists){
         create_forum_form_table();
     }
@@ -46,9 +46,8 @@ function create_field_table(){
     global $wpdb;
     
     $charset_collate = $wpdb->get_charset_collate();
-    $table_prefix = $wpdb->prefix;
     // Create the fields table
-    $fields_table_name = $table_prefix . 'custom_wpForo_fields';
+    $fields_table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
     $fields_table_sql = "CREATE TABLE $fields_table_name (
         id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
         field_name VARCHAR(25) NOT NULL,
@@ -68,9 +67,8 @@ function create_form_table(){
     global $wpdb;
     
     $charset_collate = $wpdb->get_charset_collate();
-    $table_prefix = $wpdb->prefix;
     // Create the forms table
-    $forms_table_name = $table_prefix . 'custom_wpForo_forms';
+    $forms_table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
     $forms_table_sql = "CREATE TABLE $forms_table_name (
         id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
         form_name VARCHAR(255) NOT NULL,
@@ -82,15 +80,14 @@ function create_field_form_table(){
     global $wpdb;
     
     $charset_collate = $wpdb->get_charset_collate();
-    $table_prefix = $wpdb->prefix;
     // Create the junction table for form-field relationships
-    $junction_table_name = $table_prefix . 'custom_wpForo_form_fields';
+    $junction_table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
     $junction_table_sql = "CREATE TABLE $junction_table_name (
         form_id INT(11) UNSIGNED NOT NULL,
         field_id INT(11) UNSIGNED NOT NULL,
         PRIMARY KEY (form_id, field_id),
-        FOREIGN KEY (form_id) REFERENCES {$wpdb->prefix}custom_wpforo_forms(id),
-        FOREIGN KEY (field_id) REFERENCES {$wpdb->prefix}custom_wpforo_fields(id)
+        FOREIGN KEY (form_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS']}(id),
+        FOREIGN KEY (field_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']}(id)
     ) $charset_collate;";
     dbDelta($junction_table_sql);
 }
@@ -98,9 +95,8 @@ function create_forum_form_table(){
     global $wpdb;
     
     $charset_collate = $wpdb->get_charset_collate();
-    $table_prefix = $wpdb->prefix;
     //Each forum can have ony ONE form
-    $forum_form_table_name = $table_prefix . 'custom_wpforo_forum_forms';
+    $forum_form_table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS'];
     $forum_form_table_sql = "CREATE TABLE $forum_form_table_name (
         id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
         forum_id INT(10) UNSIGNED NOT NULL,
@@ -108,7 +104,7 @@ function create_forum_form_table(){
         PRIMARY KEY (id),
         UNIQUE KEY (forum_id),
         FOREIGN KEY (forum_id) REFERENCES {$wpdb->prefix}wpforo_forums(forumid),
-        FOREIGN KEY (form_id) REFERENCES {$wpdb->prefix}custom_wpforo_forms(id)
+        FOREIGN KEY (form_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS']}(id)
     ) $charset_collate;";
     dbDelta($forum_form_table_sql);
 }
@@ -120,16 +116,15 @@ function create_post_table(){
         echo "Failed to change engine of wpforo_posts table to InnoDB";
     }
     $charset_collate = $wpdb->get_charset_collate();
-    $table_prefix = $wpdb->prefix;
     // Create the posts table
-    $posts_table_name = $table_prefix . 'custom_wpforo_posts';
+    $posts_table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['POSTS'];
     $posts_table_sql = "CREATE TABLE $posts_table_name (
         post_id BIGINT(20) UNSIGNED NOT NULL,
         field_id INT(11) UNSIGNED NOT NULL,
         field_value VARCHAR(255) NOT NULL,
         PRIMARY KEY (post_id, field_id),
         FOREIGN KEY (post_id) REFERENCES {$wpdb->prefix}wpforo_posts(postid),
-        FOREIGN KEY (field_id) REFERENCES {$wpdb->prefix}custom_wpforo_fields(id)
+        FOREIGN KEY (field_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']}(id)
     ) $charset_collate;";
     dbDelta($posts_table_sql);
 }

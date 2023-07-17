@@ -33,4 +33,11 @@
             echo '<link rel="stylesheet" href="'. plugin_dir_url(__FILE__). 'page_content/CSS/' . $cssfile . '">';
         }
     }
+    //Constants
+    global $wpdb;
+    $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'] = $table_prefix = $wpdb->prefix .'custom_wpforo_fields';
+    $GLOBALS['CUSTOM_WPFORO_TABLES']['POSTS'] = $table_prefix = $wpdb->prefix.'custom_wpforo_posts';
+    $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'] = $table_prefix = $wpdb->prefix.'custom_wpforo_forms';
+    $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'] = $table_prefix = $wpdb->prefix.'custom_wpforo_form_fields';
+    $GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS'] = $table_prefix = $wpdb->prefix.'custom_wpforo_forum_forms';
 ?>

@@ -6,8 +6,8 @@ function list_field_options(){
     }
     global $wpdb;
     //get all custom fields that are not in the form
-    $fieldsTable = $wpdb->prefix . 'custom_wpForo_fields';
-    $formFieldsTable = $wpdb->prefix . 'custom_wpForo_form_fields';
+    $fieldsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
+    $formFieldsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
     $query = "SELECT $fieldsTable.*
         FROM $fieldsTable
         WHERE id NOT IN (
@@ -64,9 +64,9 @@ function setEditInputs(){
     }
     $form_id = $_GET['edit_form'];
     global $wpdb;
-    $formsTable = $wpdb->prefix . 'custom_wpForo_forms';
-    $formFieldsTable = $wpdb->prefix . 'custom_wpForo_form_fields';
-    $fieldsTable = $wpdb->prefix . 'custom_wpForo_fields';
+    $formsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
+    $formFieldsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
+    $fieldsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
     //get form name
     $query = "SELECT form_name
         FROM $formsTable
@@ -88,8 +88,8 @@ function setEditInputs(){
 }
 function insertForm($form_name,$form_fields){
     global $wpdb;
-    $formsTable = $wpdb->prefix . 'custom_wpForo_forms';
-    $formFieldsTable = $wpdb->prefix . 'custom_wpForo_form_fields';
+    $formsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
+    $formFieldsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
 
     //insert form
     $query = "INSERT INTO $formsTable (form_name)
@@ -112,8 +112,8 @@ function insertForm($form_name,$form_fields){
 }
 function updateForm($form_id,$form_name,$form_fields){
     global $wpdb;
-    $formsTable = $wpdb->prefix . 'custom_wpForo_forms';
-    $formFieldsTable = $wpdb->prefix . 'custom_wpForo_form_fields';
+    $formsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
+    $formFieldsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
     //update form
     $query = "UPDATE $formsTable
         SET form_name = '$form_name'

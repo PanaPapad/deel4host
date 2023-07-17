@@ -3,7 +3,7 @@
 Plugin Name: Custom wpForo Fields
 Description: A plugin to add custom fields to wpForo. Using custom fields, custom forms can also be
 created.
-Version: 0.3
+Version: 0.9
 Author: Panagiotis Papadopoulos
 */
 ob_clean();
@@ -94,18 +94,20 @@ function go_to_attachFormPage(){
  * @return void
  */
 function go_to_page($page){
-    include_once 'Globals.php';
-    include $GLOBALS['page_functions_path'] . $page . '.php';
-    include $GLOBALS['page_content_path'] . $page . '.php';
+    include_once plugin_dir_path(__FILE__).'Globals.php';
+    include_once $GLOBALS['page_functions_path'] . $page . '.php';
+    include_once $GLOBALS['page_content_path'] . $page . '.php';
     exit;
 }
 function on_activate() {
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     //Call the install file
-    include_once 'install.php';
+    include_once plugin_dir_path(__FILE__).'Globals.php';
+    include_once plugin_dir_path(__FILE__) .'install.php';
 }
 function inject_wpforo_fields($fields, $type, $forum){
     global $wpdb;
-    $fields_table_name = $wpdb->prefix . 'custom_wpForo_fields';
+    $fields_table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
     $query = "SELECT * FROM $fields_table_name";
     $customFields = $wpdb->get_results($query);
     for($i=0;$i<count($customFields);$i++){
@@ -135,9 +137,9 @@ function inject_wpforo_fields($fields, $type, $forum){
 }
 function inject_wpforo_forms($fields, $forum, $guest){
     global $wpdb;
-    $forum_form_table = $wpdb->prefix . 'custom_wpforo_forum_forms';
-    $form_fields_table = $wpdb->prefix . 'custom_wpforo_form_fields';
-    $fields_table = $wpdb->prefix . 'custom_wpforo_fields';
+    $forum_form_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS'];
+    $form_fields_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
+    $fields_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
 
     $formIdQuery = "SELECT form_id FROM $forum_form_table WHERE forum_id = {$forum['forumid']}";
     $formId = $wpdb->get_var($formIdQuery);
@@ -153,7 +155,6 @@ function inject_wpforo_forms($fields, $forum, $guest){
         return $fields;
     }
 
-    $fieldNames = [];
     for($i=0;$i<count($formFields);$i++){
         $fieldId = $formFields[$i]->field_id;
         $fieldName = $wpdb->get_var("SELECT field_name FROM $fields_table WHERE id = $fieldId");
@@ -163,56 +164,53 @@ function inject_wpforo_forms($fields, $forum, $guest){
 }
 function add_custom_fields_to_post($postArgs, $forum){
     global $wpdb;
-    $table_prefix = $wpdb->prefix;
     //Get the post id
     $postId = WPF()->db->insert_id;
-    $table_name = $wpdb->prefix . 'custom_wpforo_forum_forms';
+    $table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS'];
     //Get form id
     $query = "SELECT form_id FROM $table_name WHERE forum_id = {$forum['forumid']}";
     $formId = $wpdb->get_var($query);
     //Get custom field list
-    $customFields = $wpdb->get_results("SELECT field_id FROM {$wpdb->prefix}custom_wpForo_form_fields WHERE form_id = $formId");
+    $customFields = $wpdb->get_results("SELECT field_id FROM {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS']} WHERE form_id = $formId");
     
     //Insert the custom field into the database
     for($i=0;$i<count($customFields);$i++){
         $fieldId = $customFields[$i]->field_id;
-        $field = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}custom_wpForo_fields WHERE id = $fieldId");
+        $field = $wpdb->get_row("SELECT * FROM {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']} WHERE id = $fieldId");
         $fieldName = $field->field_name;
         $fieldValue = $postArgs[$fieldName];
-        $result = $wpdb->insert("{$wpdb->prefix}custom_wpForo_posts", array(
+        $result = $wpdb->insert("{$GLOBALS['CUSTOM_WPFORO_TABLES']['POSTS']}", array(
             'post_id' => $postId,
             'field_id' => $fieldId,
             'field_value' => $fieldValue
         ));
         echo $wpdb->last_error;
     }
-    $table_name = $table_prefix . 'custom_wpForo_post';
 }
 function inject_post_field($postContent,$post){
     global $wpdb;
-    $table_prefix = $wpdb->prefix;
-    $table_name = $table_prefix . 'custom_wpforo_posts';
+    $table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['POSTS'];
     $postId = $post['postid'];
     $customFields = $wpdb->get_results("SELECT field_id, field_value FROM $table_name WHERE post_id = $postId");
     for($i=0;$i<count($customFields);$i++){
         $fieldId = $customFields[$i]->field_id;
         $fieldValue = $customFields[$i]->field_value;
-        $field = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}custom_wpForo_fields WHERE id = $fieldId");
+        $field = $wpdb->get_row("SELECT * FROM {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']} WHERE id = $fieldId");
         $fieldName = $field->field_name;
         $postContent .= '<p><b>' . $fieldName . '</b>: ' . $fieldValue . '</p>';
     }
     return $postContent;
 }
 function uninstallPlugin() {
+    include_once plugin_dir_path(__FILE__).'Globals.php';
     global $wpdb;
-    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}custom_wpforo_forum_forms");
-    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}custom_wpforo_posts");
-    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}custom_wpforo_form_fields");
-    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}custom_wpforo_forms");
-    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}custom_wpforo_fields");
+    $wpdb->query("DROP TABLE IF EXISTS {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS']}");
+    $wpdb->query("DROP TABLE IF EXISTS {$GLOBALS['CUSTOM_WPFORO_TABLES']['POSTS']}");
+    $wpdb->query("DROP TABLE IF EXISTS {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS']}");
+    $wpdb->query("DROP TABLE IF EXISTS {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS']}");
+    $wpdb->query("DROP TABLE IF EXISTS {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']}");
 }
 // Page paths
-require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 $GLOBALS['page_content_path'] = plugin_dir_path(__FILE__) . 'page_content/';
 $GLOBALS['page_functions_path'] = plugin_dir_path(__FILE__) . 'page_functions/';
 //Wordpress Hooks

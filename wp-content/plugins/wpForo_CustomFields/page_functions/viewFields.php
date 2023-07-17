@@ -1,7 +1,7 @@
 <?php
 function listCreatedFields() {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'custom_wpForo_fields';
+    $table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
     $custom_fields = $wpdb->get_results("SELECT * FROM $table_name");
     //Create table header
     echo '<tr>';

@@ -2,7 +2,7 @@
 
 function list_custom_forms(){
     global $wpdb;
-    $table_name = $wpdb->prefix . 'custom_wpForo_forms';
+    $table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
     $forms = $wpdb->get_results("SELECT * FROM $table_name");
     //if there are no forms, display a message
     if(empty($forms)){

@@ -40,8 +40,7 @@ function process_form() {
         '%s',
     );
     global $wpdb;
-    $table_prefix = $wpdb->prefix;
-    $fields_table_name = $table_prefix . 'custom_wpForo_fields';
+    $fields_table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
     // Check if this is an edit
     if(isset($_GET['edit_field'])){
         $index = $_GET['edit_field'];
@@ -68,7 +67,6 @@ function process_form() {
     }
     if (!$success) {
         // There was an error saving your data
-        $error = $wpdb->last_error;
         wp_redirect(add_query_arg('custom_field_saved', '0',  $GLOBALS['noArgsUrl']));
         exit;
     }
@@ -83,7 +81,7 @@ function deleteCustomField() {
     $id = $_GET['delete_field'];
     global $wpdb;
     $success = $wpdb->delete(
-        $wpdb->prefix . 'custom_wpForo_fields',
+        $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'],
         array(
             'id' => $id,
         ),
@@ -107,7 +105,8 @@ function setEditInputs(){
     global $wpdb;
     $id = $_GET['edit_field'];
     //get custom fields from custom_wpforo_fields table
-    $custom_fields = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}custom_wpForo_fields WHERE id = $id");
+    $tableName = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
+    $custom_fields = $wpdb->get_row("SELECT * FROM $tableName WHERE id = $id");
 
     //convert to json and send to js
     $fieldList = json_encode($custom_fields);

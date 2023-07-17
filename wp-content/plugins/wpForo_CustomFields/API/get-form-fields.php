@@ -27,8 +27,8 @@ if(!isset($_GET['form_id'])){
 }
 header('Content-Type: application/json');
 global $wpdb;
-$form_fields_table = $wpdb->prefix . 'custom_wpForo_form_fields';
-$fields_table = $wpdb->prefix . 'custom_wpForo_fields';
+$form_fields_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
+$fields_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
 $field_ids = $wpdb->get_results("SELECT field_id FROM $form_fields_table WHERE form_id = " . $_GET['form_id'], ARRAY_A);
 //Fetch the fields from the DB
 $fields = array();

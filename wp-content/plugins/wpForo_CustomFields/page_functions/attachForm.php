@@ -2,8 +2,8 @@
 function print_attachTable(){
     global $wpdb;
     $forumsTable = $wpdb->prefix . 'wpforo_forums';
-    $formsTable = $wpdb->prefix . 'custom_wpforo_forms';
-    $junctionTable = $wpdb->prefix . 'custom_wpforo_forum_forms';
+    $formsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
+    $junctionTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS'];
     //Get all forum names and their attached forms if they have any
     //Forums that don't have any forms attached will be displayed as well
     $forums = $wpdb->get_results("SELECT $forumsTable.forumid,title,form_id,form_name FROM $forumsTable LEFT JOIN $junctionTable ON $forumsTable.forumid = $junctionTable.forum_id LEFT JOIN $formsTable ON $junctionTable.form_id = $formsTable.id");
@@ -42,7 +42,7 @@ function processForm(){
     $error = json_last_error_msg();
     //Update the database
     global $wpdb;
-    $junctionTable = $wpdb->prefix . 'custom_wpforo_forum_forms';
+    $junctionTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS'];
     $wpdb->query("DELETE FROM $junctionTable");
     foreach($relations as $relation){
         $wpdb->insert($junctionTable, array('forum_id' => $relation['forumId'], 'form_id' => $relation['formId']));

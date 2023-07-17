@@ -25,7 +25,7 @@ $form_id = $_POST['form_id'];
 
 // Perform your data retrieval logic here
 global $wpdb;
-$formsTable = $wpdb->prefix . 'custom_wpForo_forms';
+$formsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
 $success = $wpdb->delete($formsTable, array('id' => $form_id));
 if(!$success){
     http_response_code(500);
