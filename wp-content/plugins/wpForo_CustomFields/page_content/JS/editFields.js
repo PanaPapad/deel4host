@@ -70,6 +70,30 @@ function presentMessages() {
         showToast(0, "Error", "Custom field could not be deleted.");
     }
 }
+function updateForm() {
+    //Get field type
+    const fieldType = fieldTypeSelect.value;
+    //Get field options
+    const fieldOptions = document.getElementById("field_options");
+    const fieldDefault = document.getElementById("field_default");
+    //Check if field type is select
+    if (fieldType === "select" || fieldType === "radio") {
+        fieldOptions.disabled = false;
+    }
+    else {
+        fieldOptions.disabled = true;
+    }
+    //Check if field type is checkbox
+    if (fieldType === "checkbox") {
+        fieldDefault.disabled = true;
+    }
+    else {
+        fieldDefault.disabled = false;
+    }
+}
 const submitBtn = document.getElementById("submitBtn");
+const fieldTypeSelect = document.getElementById("field_type");
 //submitBtn.addEventListener("click", submitForm);
+fieldTypeSelect.addEventListener("change", updateForm);
 presentMessages();
+

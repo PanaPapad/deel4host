@@ -59,8 +59,8 @@ inject_css( $cssList )
 
 		<div class="form-row">
 			<div class="form-group col-md-2">
-				<label for="field_fa-icon">Field Icon:</label>
-				<input type="text" id="field_fa_icon" name="field_fa_icon" class="form-control">
+				<label for="field_fa-icon">Field Icon: <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/icons">See Icons</a></label>
+				<input placeholder="fa-solid fa-bars"  type="text" id="field_fa_icon" name="field_fa_icon" class="form-control">
 			</div>
 		</div>
 
@@ -89,8 +89,8 @@ inject_css( $cssList )
 
 		<div class="form-row">
 			<div class="form-group col-md-4">
-				<label for="field_options">Options (for select, radio, and checkbox):</label>
-				<input type="text" id="field_options" name="field_options" class="form-control">
+				<label for="field_options">Options (for select and radio):</label>
+				<input type="text" id="field_options" name="field_options" class="form-control" disabled>
 			</div>
 		</div>
 
