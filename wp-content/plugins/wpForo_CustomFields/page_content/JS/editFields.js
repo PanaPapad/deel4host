@@ -40,6 +40,7 @@ function setFieldValues(fieldValues) {
             element.value = value;
         }
     }
+    updateForm();
 }
 function presentMessages() {
     //Check if toast container exists
@@ -76,19 +77,27 @@ function updateForm() {
     //Get field options
     const fieldOptions = document.getElementById("field_options");
     const fieldDefault = document.getElementById("field_default");
+    const fieldPlaceholder = document.getElementById("field_placeholder");
+    const fieldRequired = document.getElementById("field_required");
     //Check if field type is select
-    if (fieldType === "select" || fieldType === "radio") {
+    if (fieldType === "select" || fieldType === "radio" || fieldType === "checkbox") {
         fieldOptions.disabled = false;
+        fieldOptions.required = true;
     }
     else {
         fieldOptions.disabled = true;
+        fieldOptions.required = false;
     }
     //Check if field type is checkbox
     if (fieldType === "checkbox") {
         fieldDefault.disabled = true;
+        fieldPlaceholder.disabled = true;
+        fieldRequired.disabled = true;
     }
     else {
         fieldDefault.disabled = false;
+        fieldPlaceholder.disabled = false;
+        fieldRequired.disabled = false;
     }
 }
 const submitBtn = document.getElementById("submitBtn");

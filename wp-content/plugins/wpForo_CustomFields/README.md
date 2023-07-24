@@ -25,3 +25,4 @@ The PHP code that will be executed when the page is loaded is inside the page_fu
 - **JavaScript**
 JavaScript files are located in the page_content/JS directory. JS files can be injected in pages by calling a function defined in the Globals.php file (root directory). The function takes a list of JS file names as an argument and injects them into the page.
 
+--All available field types can be found in wpforo Forms.php class.--
