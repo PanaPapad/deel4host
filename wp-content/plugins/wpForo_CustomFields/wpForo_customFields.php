@@ -3,7 +3,7 @@
 Plugin Name: Custom wpForo Fields
 Description: A plugin to add custom fields to wpForo. Using custom fields, custom forms can also be
 created.
-Version: 0.9
+Version: pre-1.0
 Author: Panagiotis Papadopoulos
 */
 ob_clean();
