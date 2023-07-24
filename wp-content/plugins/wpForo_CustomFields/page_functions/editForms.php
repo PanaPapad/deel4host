@@ -1,4 +1,7 @@
 <?php
+/**
+ * List the fields that are not in the form
+ */
 function list_field_options(){
     $form_id = -1;
     if(isset($_GET['edit_form'])){
@@ -21,6 +24,12 @@ function list_field_options(){
             . $custom_fields[$i]['field_name'] . ' : ' . $custom_fields[$i]['field_type'] . '</option>';
     }
 }
+/**
+ * Process the submitted form.
+ * A message will be displayed on the page if the form was saved successfully or not.
+ * Data will be sanitized before being inserted into the database.
+ * If an error occurs, the transaction will be rolled back.
+ */
 function process_form(){
     // Check if the user has submitted the form
     if (!isset($_POST['Add_Custom_WpForo_Form'])) {
@@ -52,11 +61,15 @@ function process_form(){
         wp_redirect(add_query_arg('custom_form_saved', '0',  $GLOBALS['noArgsUrl']));
         exit;
     }
-    // Commit the transaction
+    // Commit on success
     $wpdb->query('COMMIT');
     wp_redirect(add_query_arg('custom_form_saved', '1',  $GLOBALS['noArgsUrl']));
     exit;
 }
+/**
+ * Set the form name and form fields inputs to the values of the form being edited.
+ * The data will be passed to the javascript function setData() which will set the inputs.
+ */
 function setEditInputs(){
     //Check for edit_form query arg
     if(!isset($_GET['edit_form'])){
@@ -86,6 +99,10 @@ function setEditInputs(){
     //set form name input
     call_js_fn_onload("setData($data)");
 }
+/**
+ * Insert a new form into the database.
+ * NEVER CALL THIS FUNCTION WITHOUT STARTING A TRANSACTION FIRST.
+ */
 function insertForm($form_name,$form_fields){
     global $wpdb;
     $formsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
@@ -110,6 +127,10 @@ function insertForm($form_name,$form_fields){
     $success = $wpdb->query($query);
     return true;
 }
+/**
+ * Update an existing form in the database.
+ * NEVER CALL THIS FUNCTION WITHOUT STARTING A TRANSACTION FIRST.
+ */
 function updateForm($form_id,$form_name,$form_fields){
     global $wpdb;
     $formsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
@@ -149,6 +170,7 @@ function updateForm($form_id,$form_name,$form_fields){
     }
     return true;
 }
+// Current page url without query args
 $GLOBALS['noArgsUrl'] = remove_query_arg(
     array(
         'edit_form',
@@ -156,6 +178,7 @@ $GLOBALS['noArgsUrl'] = remove_query_arg(
     ),
     wp_get_referer()
 );
+// Call on PHP entry
 process_form();
 setEditInputs();
 ?>

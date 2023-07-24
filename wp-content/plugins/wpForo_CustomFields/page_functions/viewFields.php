@@ -1,4 +1,7 @@
 <?php
+/**
+ * Create a table with all the custom fields
+ */
 function listCreatedFields() {
     global $wpdb;
     $table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];

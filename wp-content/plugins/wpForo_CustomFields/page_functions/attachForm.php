@@ -1,4 +1,7 @@
 <?php
+/**
+ * Create a table with all the forums and their attached forms.
+ */
 function print_attachTable(){
     global $wpdb;
     $forumsTable = $wpdb->prefix . 'wpforo_forums';
@@ -27,6 +30,9 @@ function print_attachTable(){
     }
     injectObject('forms', $forms);
 }
+/**
+ * Process the submitted form.
+ */
 function processForm(){
     //Check if form was submitted
     if(!isset($_POST['Save_Changes'])){
@@ -39,7 +45,7 @@ function processForm(){
     //Get the form data
     $dataString = stripslashes($_POST['forum_form_relations']);
     $relations = json_decode($dataString, true);
-    $error = json_last_error_msg();
+    //$error = json_last_error_msg(); //For debugging
     //Update the database
     global $wpdb;
     $junctionTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS'];

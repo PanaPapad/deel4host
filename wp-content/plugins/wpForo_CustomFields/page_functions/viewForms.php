@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Create a table of all the custom forms.
+ */
 function list_custom_forms(){
     global $wpdb;
     $table_name = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];

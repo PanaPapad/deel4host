@@ -1,4 +1,7 @@
 <?php
+/**
+ * Process the submitted form.
+ */
 function process_form() {
     // Check if our form has been submitted
     if (!isset($_POST['Add_Custom_WpForo_Field'])) {
@@ -74,6 +77,9 @@ function process_form() {
     wp_redirect(add_query_arg('custom_field_saved', '1',  $GLOBALS['noArgsUrl']));
     exit;
 }
+/**
+ * Delete a custom field from the database.
+ */
 function deleteCustomField() {
     if (!isset($_GET['delete_field'])) {
         return;
@@ -98,6 +104,9 @@ function deleteCustomField() {
         exit;
     }
 }
+/**
+ * Set the edit form inputs to the values of the form being edited.
+ */
 function setEditInputs(){
     if(!isset($_GET['edit_field'])){
         return;
@@ -112,7 +121,7 @@ function setEditInputs(){
     $fieldList = json_encode($custom_fields);
     call_js_fn_onload("setFieldValues($fieldList)");
 }
-/** BELOW CODE RUNS ON ENTRY */
+/** BELOW CODE RUNS ON PHP ENTRY */
 $GLOBALS['noArgsUrl'] = remove_query_arg(
     array(
     'custom_field_saved',

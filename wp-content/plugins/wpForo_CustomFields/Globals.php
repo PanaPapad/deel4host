@@ -9,7 +9,6 @@
             echo '<script src="'. plugin_dir_url(__FILE__). 'page_content/JS/' . $jsfile . '" defer></script>';
         }
     }
-
     $GLOBALS['jsCallCounter'] = 0;
     /**
      * Calls a javascript function after the page loads.
@@ -25,9 +24,20 @@
             ';document.getElementById("'.$scriptTagId.'").remove();} </script>';
         $GLOBALS['jsCallCounter']++;
     }
+    /**
+     * Injects a javascript object or array into the page.
+     * The object will be available in the page as a javascript variable.
+     * @param string $objectName The name of the object
+     * @param object|array $object The object to inject
+     */
     function injectObject($objectName, $object){
         echo '<script> var ' . $objectName . ' = JSON.parse(\'' . json_encode($object) . '\'); </script>';
     }
+    /**
+     * Inject a list of css files into the page.
+     * CSS files need to be under the page_content/CSS dir
+     * @param array $cssList The list of CSS files to inject
+     */
     function inject_css($cssList){
         foreach ($cssList as $cssfile) {
             echo '<link rel="stylesheet" href="'. plugin_dir_url(__FILE__). 'page_content/CSS/' . $cssfile . '">';
