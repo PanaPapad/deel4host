@@ -100,6 +100,7 @@ function deleteCustomField() {
         exit;
     } 
     else {
+        //$error = $wpdb->last_error; //For debugging purposes
         wp_redirect(add_query_arg('custom_field_deleted', '0', $GLOBALS['noArgsUrl']));
         exit;
     }
