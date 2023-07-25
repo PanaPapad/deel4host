@@ -86,8 +86,8 @@ function create_field_form_table(){
         form_id INT(11) UNSIGNED NOT NULL,
         field_id INT(11) UNSIGNED NOT NULL,
         PRIMARY KEY (form_id, field_id),
-        FOREIGN KEY (form_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS']}(id),
-        FOREIGN KEY (field_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']}(id)
+        FOREIGN KEY (form_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS']}(id) ON DELETE CASCADE,
+        FOREIGN KEY (field_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']}(id) ON DELETE CASCADE
     ) $charset_collate;";
     dbDelta($junction_table_sql);
 }
@@ -103,8 +103,8 @@ function create_forum_form_table(){
         form_id INT(11) UNSIGNED NOT NULL,
         PRIMARY KEY (id),
         UNIQUE KEY (forum_id),
-        FOREIGN KEY (forum_id) REFERENCES {$wpdb->prefix}wpforo_forums(forumid),
-        FOREIGN KEY (form_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS']}(id)
+        FOREIGN KEY (forum_id) REFERENCES {$wpdb->prefix}wpforo_forums(forumid) ON DELETE CASCADE,
+        FOREIGN KEY (form_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS']}(id) ON DELETE CASCADE
     ) $charset_collate;";
     dbDelta($forum_form_table_sql);
 }
@@ -123,8 +123,8 @@ function create_post_table(){
         field_id INT(11) UNSIGNED NOT NULL,
         field_value VARCHAR(255) NOT NULL,
         PRIMARY KEY (post_id, field_id),
-        FOREIGN KEY (post_id) REFERENCES {$wpdb->prefix}wpforo_posts(postid),
-        FOREIGN KEY (field_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']}(id)
+        FOREIGN KEY (post_id) REFERENCES {$wpdb->prefix}wpforo_posts(postid) ON DELETE CASCADE,
+        FOREIGN KEY (field_id) REFERENCES {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']}(id) ON DELETE CASCADE
     ) $charset_collate;";
     dbDelta($posts_table_sql);
 }
