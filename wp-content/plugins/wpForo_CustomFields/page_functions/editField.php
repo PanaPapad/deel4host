@@ -11,6 +11,7 @@ function process_form() {
     check_admin_referer('custom_fields_nonce_action', 'custom_fields_nonce');
     // Sanitize and store the form data as needed
     $field_name = sanitize_text_field($_POST['field_name']);
+    $field_name = str_replace(' ', '_', $field_name);
     $field_type = sanitize_text_field($_POST['field_type']);
     $field_label = sanitize_text_field($_POST['field_label']);
     $field_description = sanitize_textarea_field($_POST['field_description']);

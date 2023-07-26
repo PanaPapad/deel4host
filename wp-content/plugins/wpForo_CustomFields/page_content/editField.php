@@ -35,7 +35,11 @@ inject_css( $cssList )
 			<div class="form-group col-md-2">
 				<select id="field_type" name="field_type" class="form-control" required>
 					<option value="text">Text</option>
-					<option value="tinymce">Textarea</option>
+					<option value="tinymce">Tiny MCE</option>
+					<option value="textarea">Textarea</option>
+					<option value="tel">Telephone</option>
+					<option value="file">File</option>
+					<option value="url">URL</option>
 					<option value="radio">Radio</option>
 					<option value="checkbox">Checkbox</option>
 					<option value="select">Select</option>
@@ -65,14 +69,14 @@ inject_css( $cssList )
 		</div>
 
 		<div class="form-row">
-			<div class="form-group col-md-4">
+			<div class="form-group col-md-4" hidden>
 				<label for="field_description">Field Description:</label>
 				<textarea title="Brief description for the field." id="field_description" name="field_description" class="form-control" hidden></textarea>
 			</div>
 		</div>
 
 		<div class="form-row">
-			<div class="form-group col-md-2">
+			<div class="form-group col-md-2" hidden>
 				<label for="field_default">Default Value:</label>
 				<input title="Default value for the field." type="text" id="field_default" name="field_default" class="form-control" hidden>
 			</div>
