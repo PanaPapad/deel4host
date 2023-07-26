@@ -1,4 +1,7 @@
 <?php
+/**
+ * DEPRECATED DO NOT USE
+ */
 // API endpoint: wpForo_CustomFields/API/delete-form.php
 
 /** Debugging
@@ -8,7 +11,7 @@
 */
 //Load only basic WordPress functionality
 define('WP_USE_THEMES', false);
-require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/deel4host/wp-load.php');
 
 //Only allow GET requests
 if (!($_SERVER['REQUEST_METHOD'] === 'POST')) {
