@@ -45,6 +45,7 @@
     }
     //Constants
     global $wpdb;
+    $GLOBALS['CUSTOM_JS'] = array();// List of JS files to inject, scripts are added at the admin_enqueue_scripts hook
     $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'] = $table_prefix = $wpdb->prefix .'custom_wpforo_fields';
     $GLOBALS['CUSTOM_WPFORO_TABLES']['POSTS'] = $table_prefix = $wpdb->prefix.'custom_wpforo_posts';
     $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'] = $table_prefix = $wpdb->prefix.'custom_wpforo_forms';

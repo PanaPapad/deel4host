@@ -24,31 +24,40 @@ function inject_css_js($hook_suffix) {
         'baseUrl' => esc_url_raw( rest_url('wpforo_custom_fields/v1') ),
         'nonce' => wp_create_nonce('wp_rest'),
     ));
-
+    //Append custom script ids to the global array
+    $GLOBALS["CUSTOM_JS"] = array_merge($GLOBALS["CUSTOM_JS"], array('bootstrap','globalsJS'));
+    
     /* Page specific JS/CSS */
     if($hook_suffix == 'wpforo-fields_page_custom-wpforo-forms-view'){
         wp_enqueue_script('viewFormsJS', plugin_dir_url(__FILE__) . 'page_content/JS/viewForms.js', array('bootstrapJS'));
         wp_enqueue_style('viewFormsCSS', plugin_dir_url(__FILE__) . 'page_content/CSS/viewForms.css');
+        $GLOBALS["CUSTOM_JS"] = array_merge($GLOBALS["CUSTOM_JS"], array('viewFormsJS'));
     }
     elseif($hook_suffix == 'wpforo-fields_page_custom-wpforo-forms-edit'){
         wp_enqueue_script('editFormsJS', plugin_dir_url(__FILE__) . 'page_content/JS/editForms.js', array('bootstrapJS'));
+        $GLOBALS["CUSTOM_JS"] = array_merge($GLOBALS["CUSTOM_JS"], array('editFormsJS'));
     }
     elseif($hook_suffix == 'wpforo-fields_page_custom-wpforo-forms-attach'){
         wp_enqueue_script('attachFormJS', plugin_dir_url(__FILE__) . 'page_content/JS/attachForm.js', array('bootstrapJS'));
+        $GLOBALS["CUSTOM_JS"] = array_merge($GLOBALS["CUSTOM_JS"], array('attachFormJS'));
     }
     elseif($hook_suffix == 'toplevel_page_custom-wpforo-fields'){
         wp_enqueue_script('viewFieldsJS', plugin_dir_url(__FILE__) . 'page_content/JS/viewFields.js', array('bootstrapJS'));
+        wp_enqueue_style('viewFieldsCSS', plugin_dir_url(__FILE__) . 'page_content/CSS/viewFields.css');
+        $GLOBALS["CUSTOM_JS"] = array_merge($GLOBALS["CUSTOM_JS"], array('viewFieldsJS'));
     }
     elseif($hook_suffix == 'wpforo-fields_page_custom-wpforo-fields-edit'){
         wp_enqueue_script('editFieldJS', plugin_dir_url(__FILE__) . 'page_content/JS/editFields.js', array('bootstrapJS'));
         wp_enqueue_style('editFieldCSS', plugin_dir_url(__FILE__) . 'page_content/CSS/editFields.css');
+        $GLOBALS["CUSTOM_JS"] = array_merge($GLOBALS["CUSTOM_JS"], array('editFieldJS'));
     }
 }
 /**
- * Add defer attribute to scripts.
+ * Add defer attribute to injected scripts.
  */
 function add_defer($tag, $handle, $src) {
-    $defer = array('bootstrapJS', 'globalsJS', 'viewFormsJS','globalsJS','viewFieldsJS');
+    //Add defer attribute to scripts from global array
+    $defer = $GLOBALS["CUSTOM_JS"];
     if (in_array($handle, $defer)) {
         return '<script src="' . $src . '" defer="defer" type="text/javascript"></script>' . "\n";
     }
@@ -124,6 +133,9 @@ function go_to_EditFormsPage(){
 function go_to_ViewFormsPage(){
     go_to_page('viewForms');
 }
+/**
+ * Go to the attach forms page.
+ */
 function go_to_attachFormPage(){
     go_to_page('attachForm');
 }
@@ -138,12 +150,18 @@ function go_to_page($page){
     include_once $GLOBALS['page_content_path'] . $page . '.php';
     exit;
 }
+/**
+ * Code that executes on plugin activation.
+ */
 function on_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     //Call the install file
     include_once plugin_dir_path(__FILE__).'Globals.php';
     include_once plugin_dir_path(__FILE__) .'install.php';
 }
+/**
+ * Code that executes on plugin uninstallation.
+ */
 function uninstallPlugin() {
     include_once plugin_dir_path(__FILE__).'Globals.php';
     global $wpdb;
@@ -153,8 +171,11 @@ function uninstallPlugin() {
     $wpdb->query("DROP TABLE IF EXISTS {$GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS']}");
     $wpdb->query("DROP TABLE IF EXISTS {$GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS']}");
 }
+/**
+ * Register REST API endpoints.
+ */
 function register_REST_apis(){
-    
+    //Response for preflight requests
     add_action('init', function () {
         $method = $_SERVER['REQUEST_METHOD'];
         if($method == "OPTIONS") {
@@ -163,21 +184,19 @@ function register_REST_apis(){
             exit();
         }
     });
+    //Register endpoints
     require_once plugin_dir_path(__FILE__).'API/get-form-fields.php';
 }
-// Page paths
+/* Page paths */
 $GLOBALS['page_content_path'] = plugin_dir_path(__FILE__) . 'page_content/';
 $GLOBALS['page_functions_path'] = plugin_dir_path(__FILE__) . 'page_functions/';
-//Wordpress Hooks
-add_action('admin_enqueue_scripts', 'inject_css_js');//Add bootstrap
-add_action('admin_menu', 'wp_fieldsMenu');//Add menu for admin
+/* Wordpress Hooks */
+add_action('admin_enqueue_scripts', 'inject_css_js');//Add custom css/js
+add_action('admin_menu', 'wp_fieldsMenu');//Add admin menu
 add_action('rest_api_init', 'register_REST_apis');//Register REST API endpoints
-add_action('rest_api_init', function() {
-    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-}, 15);
-register_activation_hook(__FILE__, 'on_activate');
-register_uninstall_hook(__FILE__, 'uninstallPlugin');
-//Hook for wpForo fields
+register_activation_hook(__FILE__, 'on_activate');//Activation hook
+register_uninstall_hook(__FILE__, 'uninstallPlugin');//Uninstall hook
+/* WpForo injections */
 require_once plugin_dir_path(__FILE__) . 'injections.php';
 ob_clean();
 ?>
