@@ -19,7 +19,7 @@ function get_fields( WP_REST_Request $request ) {
     $data = array();
     foreach($fields as $field){
         $field_id = $field->field_id;
-        $field_data = $wpdb->get_results("SELECT * FROM $fields_table WHERE id = $field_id");
+        $field_data = $wpdb->get_row("SELECT * FROM $fields_table WHERE id = $field_id");
         array_push($data, $field_data);
     }
 	// Return response
