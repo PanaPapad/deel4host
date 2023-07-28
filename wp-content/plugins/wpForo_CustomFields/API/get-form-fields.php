@@ -1,41 +1,28 @@
 <?php
-// API endpoint: wpForo_CustomFields/API/get-form-fields.php
-
-/** Debugging
-* ini_set('display_errors', 1);
-* ini_set('display_startup_errors', 1);
-* error_reporting(E_ALL);
-*/
-//Load only basic WordPress functionality
-define('WP_USE_THEMES', false);
-require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');
-
-//Only Admins can access this endpoint
-if (!current_user_can('administrator')){
-    http_response_code(403);//Forbidden
-    exit;
+register_rest_route( 'wpforo_custom_fields/v1', '/form_fields', array(
+	'methods' => WP_REST_Server::ALLMETHODS,
+	'callback' => 'get_fields',
+	'permission_callback' => function (WP_REST_Request $request) {
+		return current_user_can( 'manage_options' );
+	}
+));
+function get_fields( WP_REST_Request $request ) {
+	// Perform your data retrieval logic here
+	if(!isset($_GET['form_id'])){
+        return new WP_REST_Response( 'No form id provided.', 400 );
+    }
+    $form_id = $_GET['form_id'];
+    global $wpdb;
+    $junction_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
+    $fields_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
+    $fields = $wpdb->get_results("SELECT * FROM $junction_table WHERE form_id = $form_id");
+    $data = array();
+    foreach($fields as $field){
+        $field_id = $field->field_id;
+        $field_data = $wpdb->get_results("SELECT * FROM $fields_table WHERE id = $field_id");
+        array_push($data, $field_data);
+    }
+	// Return response
+	return new WP_REST_Response( $data, 200 );
 }
-//Only allow GET requests
-if (!($_SERVER['REQUEST_METHOD'] === 'GET')) {
-    http_response_code(400);//Bad request
-    exit;
-}
-if(!isset($_GET['form_id'])){
-    http_response_code(400);//Bad request
-    echo 'form_id not set';
-    exit;
-}
-header('Content-Type: application/json');
-global $wpdb;
-$form_fields_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORM_FIELDS'];
-$fields_table = $GLOBALS['CUSTOM_WPFORO_TABLES']['FIELDS'];
-$field_ids = $wpdb->get_results("SELECT field_id FROM $form_fields_table WHERE form_id = " . $_GET['form_id'], ARRAY_A);
-//Fetch the fields from the DB
-$fields = array();
-for ($i = 0; $i < count($field_ids); $i++) {
-    $field = $wpdb->get_row("SELECT * FROM $fields_table WHERE id = " . $field_ids[$i]['field_id']);
-    array_push($fields, $field);
-}
-// Send response
-echo json_encode($fields);
 ?>

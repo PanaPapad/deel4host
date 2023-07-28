@@ -18,8 +18,10 @@ function createStickyTable() {
  */
 function getFormFields(formId) {
     const getReq = new XMLHttpRequest();
-    const url = baseApiUrl + "get-form-fields.php?form_id=" + formId;
+    const url = WPF_CUSTOM_API.baseUrl + "/form_fields?form_id=" + formId;
     getReq.open("GET", url, true);
+    getReq.setRequestHeader("Content-Type", "application/json");
+    getReq.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
     getReq.onload = function () {
         if (getReq.status !== 200) {
             showToast(0, "Error", getReq.responseText);

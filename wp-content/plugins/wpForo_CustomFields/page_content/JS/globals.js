@@ -50,5 +50,4 @@ function showToast(type, title, msg) {
 
     toast.show();
 }
-const baseApiUrl = "http://localhost/deel4host/wp-content/plugins/wpForo_CustomFields/API/";
 createToast();

@@ -1,19 +1,3 @@
-<?php
-//JS files to inject
-//JS files need to be under the page_content/JS dir
-$jsList = array(
-	'globals.js',
-	'viewForms.js',
-);
-inject_js( $jsList );
-// CSS files to inject
-// CSS files need to be under the page_content/CSS dir
-$cssList = array(
-	'globals.css',
-	'viewForms.css',
-);
-inject_css( $cssList );
-?>
 <div class="wrap">
 	<h2>View wpForo Forms</h2>
     <form method="POST" id="delete-form">

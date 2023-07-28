@@ -1,18 +1,3 @@
-<?php
-//JS files to inject
-//JS files need to be under the page_content/JS dir
-$jsList = array(
-	'globals.js',
-	'editFields.js',
-);
-inject_js( $jsList );
-$cssList = array(
-	'globals.css',
-	'editFields.css',
-);
-inject_css( $cssList )
-	?>
-
 <div class="wrap">
 	<h2>Custom wpForo Fields</h2>
 	<form method="post">
