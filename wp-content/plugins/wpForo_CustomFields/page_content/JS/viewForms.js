@@ -37,8 +37,8 @@ function getFormFields(formId) {
             const row = fieldsTbody.insertRow(i);
             const cell1 = row.insertCell(0);
             const cell2 = row.insertCell(1);
-            cell1.innerHTML = fields[i].field_name;
-            cell2.innerHTML = fields[i].field_type;
+            cell1.innerHTML = fields[i][0]['field_name'];
+            cell2.innerHTML = fields[i][0]['field_type'];
         }
     }
     getReq.send();
