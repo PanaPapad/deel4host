@@ -17,16 +17,4 @@
 	</table>
 	<!-- Save changes button -->
 	<button id="saveChangesBtn" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
-	<?php
-	//Example php code injection. Best used for small snippets.
-	//Define functions in page_functions/*.php
-	//example_function_call();
-	?>
-	<!-- <form id="submitForm" method="POST">
-		<?php
-		// Add nonce for security and authentication.
-		//wp_nonce_field( 'custom_fields_nonce_action', 'custom_fields_nonce' );
-		?>
-		<input type="submit" value="Save Changes" name="Save Changes" class="btn btn-primary">
-	</form> -->
 </div>
