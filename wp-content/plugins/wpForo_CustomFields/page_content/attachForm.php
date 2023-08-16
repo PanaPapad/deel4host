@@ -5,26 +5,28 @@
 		<thead>
 			<tr>
 				<th class='col-6'>Forum</th>
-				<th class='col-5'>Form</th>
-				<th class='col'>Edit</th>
+				<th class='col-6'>Form</th>
+				<!-- <th class='col'>Edit</th> -->
 			</tr>
 		</thead>
-		<tbody>
+		<tbody id="relationsTableBody">
 			<?php
 			print_attachTable();
 			?>
 		</tbody>
 	</table>
+	<!-- Save changes button -->
+	<button id="saveChangesBtn" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
 	<?php
 	//Example php code injection. Best used for small snippets.
 	//Define functions in page_functions/*.php
 	//example_function_call();
 	?>
-	<form id="submitForm" method="POST">
+	<!-- <form id="submitForm" method="POST">
 		<?php
 		// Add nonce for security and authentication.
-		wp_nonce_field( 'custom_fields_nonce_action', 'custom_fields_nonce' );
+		//wp_nonce_field( 'custom_fields_nonce_action', 'custom_fields_nonce' );
 		?>
 		<input type="submit" value="Save Changes" name="Save Changes" class="btn btn-primary">
-	</form>
+	</form> -->
 </div>
