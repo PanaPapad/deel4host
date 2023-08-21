@@ -49,6 +49,11 @@ function getFormFields(formId) {
 function editForm(formId) {
     window.location.href = "admin.php?page=custom-wpforo-forms-edit&edit_form=" + formId;
 }
+/**
+ * Delete a form.
+ * The deleteion is done using a REST api route.
+ * @param {number} formId 
+ */
 function deleteForm(formId) {
     const deleteReq = new XMLHttpRequest();
     const url = WPF_CUSTOM_API.baseUrl + "/delete_form";

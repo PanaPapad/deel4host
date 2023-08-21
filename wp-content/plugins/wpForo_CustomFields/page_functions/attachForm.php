@@ -33,30 +33,4 @@ function print_attachTable() {
 		echo "</tr>";
 	}
 }
-/**
- * Process the submitted form.
- */
-function processForm() {
-	//Check if form was submitted
-	if ( ! isset( $_POST['Save_Changes'] ) ) {
-		return;
-	}
-	//Check nonce
-	if ( ! isset( $_POST['custom_fields_nonce'] ) || ! wp_verify_nonce( $_POST['custom_fields_nonce'], 'custom_fields_nonce_action' ) ) {
-		return;
-	}
-	//Get the form data
-	$dataString = stripslashes( $_POST['forum_form_relations'] );
-	$relations = json_decode( $dataString, true );
-	//$error = json_last_error_msg(); //For debugging
-	//Update the database
-	global $wpdb;
-	$junctionTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORUM_FORMS'];
-	$wpdb->query( "DELETE FROM $junctionTable" );
-	foreach ( $relations as $relation ) {
-		$wpdb->insert( $junctionTable, array( 'forum_id' => $relation['forumId'], 'form_id' => $relation['formId'] ) );
-	}
-
-}
-//processForm();
 ?>

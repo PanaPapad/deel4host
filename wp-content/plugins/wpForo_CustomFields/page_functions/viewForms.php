@@ -24,36 +24,4 @@ function list_custom_forms(){
         echo '</tr>';
     }
 }
-
-function deleteForm(){
-    //Check that the user has submitted a form
-    if(!isset($_POST['delete_form'])){
-        return;
-    }
-    //Check nonce
-    if(!wp_verify_nonce( $_POST['delete_form_nonce'], 'delete_form' )){
-        return;
-    }
-    //Get id
-    if(!isset($_POST['form_id'])){
-        
-        return;
-    }
-    $form_id = $_POST['form_id'];
-    global $wpdb;
-    $formsTable = $GLOBALS['CUSTOM_WPFORO_TABLES']['FORMS'];
-    $success = $wpdb->delete($formsTable, array('id' => $form_id));
-    if(!$success){
-        http_response_code(500);
-        call_js_fn_onload('showToast(0, "Error", '.$wpdb->last_error.')');
-        exit;
-    }
-    if($wpdb->rows_affected == 0){
-        http_response_code(204);
-        call_js_fn_onload('showToast(0, "Error", "Form not found.")');
-        exit;
-    }
-    call_js_fn_onload('showToast(1, "Success", "Form deleted successfully.")');
-}
-//deleteForm();
 ?>
