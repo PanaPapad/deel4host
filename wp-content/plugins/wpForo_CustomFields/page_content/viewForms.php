@@ -1,8 +1,5 @@
 <div class="wrap">
 	<h2>View wpForo Forms</h2>
-    <form method="POST" id="delete-form">
-        <?php wp_nonce_field( 'delete_form', 'delete_form_nonce' ); ?>
-    </form>
 	<table class="table table-striped table-hover">
 		<thead>
 			<tr>

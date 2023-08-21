@@ -185,8 +185,10 @@ function register_REST_apis(){
         }
     });
     //Register endpoints
-    require_once plugin_dir_path(__FILE__).'API/get-form-fields.php';
+    /*require_once plugin_dir_path(__FILE__).'API/get-form-fields.php';
     require_once plugin_dir_path(__FILE__).'API/attach-form.php';
+    require_once plugin_dir_path(__FILE__).'API/delete-form.php';*/
+    require_once plugin_dir_path(__FILE__).'API/api_lib.php';
 }
 /* Page paths */
 $GLOBALS['page_content_path'] = plugin_dir_path(__FILE__) . 'page_content/';

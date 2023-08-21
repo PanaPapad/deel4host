@@ -50,24 +50,23 @@ function editForm(formId) {
     window.location.href = "admin.php?page=custom-wpforo-forms-edit&edit_form=" + formId;
 }
 function deleteForm(formId) {
-    //Add values to the form element
-    const confirmDelete = document.createElement('input');
-    confirmDelete.type = 'hidden';
-    confirmDelete.name = 'delete_form';
-    confirmDelete.value = '1';
-    delete_form.appendChild(confirmDelete);
-    const formIdInput = document.createElement('input');
-    formIdInput.type = 'hidden';
-    formIdInput.name = 'form_id';
-    formIdInput.value = formId;
-    delete_form.appendChild(formIdInput);
-
-    delete_form.submit();
+    const deleteReq = new XMLHttpRequest();
+    const url = WPF_CUSTOM_API.baseUrl + "/delete_form";
+    deleteReq.open("DELETE", url, true);
+    deleteReq.setRequestHeader("Content-Type", "application/json");
+    deleteReq.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
+    deleteReq.onload = function () {
+        if (deleteReq.status !== 200) {
+            showToast(0, "Error", deleteReq.responseText);
+            return;
+        }
+        showToast(1, "Success", deleteReq.responseText);
+    }
+    deleteReq.onerror = function () {
+        showToast(0, "Error", deleteReq.responseText);
+    }
+    deleteReq.send(JSON.stringify([{ form_id: formId }]));
 }
 createStickyTable();
-/**
- * @type {HTMLFormElement}
- */
-const delete_form = document.getElementById("delete-form");
 
 

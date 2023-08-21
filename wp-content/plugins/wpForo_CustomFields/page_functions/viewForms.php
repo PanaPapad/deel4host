@@ -55,5 +55,5 @@ function deleteForm(){
     }
     call_js_fn_onload('showToast(1, "Success", "Form deleted successfully.")');
 }
-deleteForm();
+//deleteForm();
 ?>

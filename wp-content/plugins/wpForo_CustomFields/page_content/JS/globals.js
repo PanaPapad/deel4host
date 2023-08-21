@@ -31,6 +31,12 @@ function createToast(){
     toastCont.appendChild(toast);
     document.body.appendChild(toastCont);
 }
+/**
+ * Present a toast message. 
+ * @param {number} type 1 for success, 0 for error.
+ * @param {string} title Title of the toast.
+ * @param {string} msg Message of the toast.
+ */
 function showToast(type, title, msg) {
     var toast = new bootstrap.Toast(document.getElementById('toast'));
     var toastTitle = document.getElementById('toastTitle');
