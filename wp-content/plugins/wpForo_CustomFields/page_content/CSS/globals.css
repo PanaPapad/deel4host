@@ -6,3 +6,8 @@
 a.disableClick{
     pointer-events: none;
 }
+/* Fade out transition */
+.fadeOut{
+    transition: opacity 1s ease-out;
+    opacity:0;
+}

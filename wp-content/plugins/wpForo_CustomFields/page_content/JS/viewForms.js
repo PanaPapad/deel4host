@@ -51,26 +51,31 @@ function editForm(formId) {
 }
 /**
  * Delete a form.
- * The deleteion is done using a REST api route.
+ * The deletion is done using a REST api route.
  * @param {number} formId 
  */
-function deleteForm(formId) {
+async function deleteForm(formId) {
     const deleteReq = new XMLHttpRequest();
     const url = WPF_CUSTOM_API.baseUrl + "/delete_form";
     deleteReq.open("DELETE", url, true);
     deleteReq.setRequestHeader("Content-Type", "application/json");
     deleteReq.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
     deleteReq.onload = function () {
+        const formRow = document.getElementById("formRow" + formId);
         if (deleteReq.status !== 200) {
             showToast(0, "Error", deleteReq.responseText);
             return;
         }
         showToast(1, "Success", deleteReq.responseText);
+        deleteRow(formRow);
     }
     deleteReq.onerror = function () {
         showToast(0, "Error", deleteReq.responseText);
     }
     deleteReq.send(JSON.stringify([{ form_id: formId }]));
+}
+async function prepareDelete(formId) {
+    showModal("Delete Form", "Are you sure you want to delete this form?", "Delete", deleteForm, formId);
 }
 createStickyTable();
 

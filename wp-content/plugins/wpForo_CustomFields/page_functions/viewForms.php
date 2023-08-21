@@ -13,14 +13,14 @@ function list_custom_forms(){
         echo '</tr>';
     }
     foreach($forms as $form){
-        echo '<tr>';
+        echo '<tr id="formRow'.$form->id.'">';
         echo '<td>' . $form->form_name . '</td>';
         //Create view fields btn
         echo '<td><input type="button" class="btn btn-primary" value="View Fields" onclick="getFormFields('.$form->id.')" /></td>';
         //Create edit btn
         echo '<td><input type="button" class="btn btn-primary" value="Edit" onclick="editForm('.$form->id.')" /></td>';
         //Create delete btn
-        echo '<td><input type="button" class="btn btn-danger" value="Delete" onclick="deleteForm('.$form->id.')"/></td>';
+        echo '<td><input type="button" class="btn btn-danger" value="Delete" onclick="prepareDelete('.$form->id.')"/></td>';
         echo '</tr>';
     }
 }
