@@ -43,7 +43,6 @@ function inject_css_js($hook_suffix) {
     }
     elseif($hook_suffix == 'toplevel_page_custom-wpforo-fields'){
         wp_enqueue_script('viewFieldsJS', plugin_dir_url(__FILE__) . 'page_content/JS/viewFields.js', array('bootstrapJS'));
-        wp_enqueue_style('viewFieldsCSS', plugin_dir_url(__FILE__) . 'page_content/CSS/viewFields.css');
         $GLOBALS["CUSTOM_JS"] = array_merge($GLOBALS["CUSTOM_JS"], array('viewFieldsJS'));
     }
     elseif($hook_suffix == 'wpforo-fields_page_custom-wpforo-fields-edit'){

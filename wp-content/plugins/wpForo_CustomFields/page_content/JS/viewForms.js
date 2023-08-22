@@ -56,7 +56,7 @@ function editForm(formId) {
  */
 async function deleteForm(formId) {
     const deleteReq = new XMLHttpRequest();
-    const url = WPF_CUSTOM_API.baseUrl + "/delete_form";
+    const url = WPF_CUSTOM_API.baseUrl + "/form";
     deleteReq.open("DELETE", url, true);
     deleteReq.setRequestHeader("Content-Type", "application/json");
     deleteReq.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);

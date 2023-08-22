@@ -11,3 +11,10 @@ a.disableClick{
     transition: opacity 1s ease-out;
     opacity:0;
 }
+.row{
+    align-items: center;
+    max-height: 90%;
+}
+select.form-control{
+    max-width: 100%;
+}

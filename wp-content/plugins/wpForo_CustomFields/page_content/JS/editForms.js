@@ -1,3 +1,6 @@
+/**
+ * Add the selected field to the table
+ */
 function addSelectedField(){
     /**
      * @type {HTMLSelectElement}
@@ -16,9 +19,41 @@ function addSelectedField(){
     addField(fieldId, fieldName, fieldType);
 }
 /**
- * @param {string} id
- * @param {string} name
- * @param {string} type
+ * Add a field from the select element using the field id.
+ * This function is used when loading a form to edit.
+ * The fields that are already in the form are added to the table.
+ * @param {number} fieldId ID of the field to add
+ */
+function addFieldFromId(fieldId){
+    //Get the option element with the fieldId
+    /**
+     * @type {HTMLSelectElement}
+     * */
+    const selectElem = document.getElementById("fieldSelect");
+    const options = selectElem.options;
+    let selectedOption = null;
+    for(let i = 0; i < options.length; i++){
+        const option = options[i];
+        if(option.value == fieldId){
+            selectedOption = option;
+            break;
+        }
+    }
+    if(selectedOption == null){
+        return;
+    }
+    const selectedText = selectedOption.text;
+    //Remove the option
+    selectElem.remove(selectedOption.index);
+    const fieldName = selectedText.split(" : ")[0];
+    const fieldType = selectedText.split(" : ")[1];
+    addField(fieldId, fieldName, fieldType);
+}
+/**
+ * Add a field to the table
+ * @param {string} id ID of the field
+ * @param {string} name Name of the field
+ * @param {string} type Type of the field
  */
 function addField(id,name, type){
 //Add the field to the table
@@ -37,7 +72,8 @@ function addField(id,name, type){
     delBtn_cell.innerHTML = "<button type='button' class='btn btn-danger' onclick='deleteField(this)'>Delete</button>";
 }
 /**
- * @param {HTMLButtonElement} btn 
+ * Delete a field from the table and add it back to the select element
+ * @param {HTMLButtonElement} btn  The delete button that was clicked
  */
 function deleteField(btn){
     //Add the option back
@@ -57,114 +93,182 @@ function deleteField(btn){
     row.parentNode.removeChild(row);
 }
 /**
- * @param {HTMLFormElement} form 
+ * Initialize the Page
  */
-function submitForm(form){
-    const formData = new FormData(form);
-    //Add the fields to the form data
-    /**
-     * @type {HTMLTableElement}
-     */
-    const table = document.getElementById("fieldsTable");
-    const rows = table.rows;
-    /**
-     * @type {string[]}
-     */
-    const fieldNames = [];
-    for(let i = 1; i < rows.length; i++){
-        const row = rows[i];
-        const name = row.cells[0].innerHTML;
-        fieldNames.push(name);
+async function initPage(){
+    //Get all fields
+    try{
+        await getAllFields();
     }
-    formData.append("field_ids", fieldNames);
-    formData.append("Add_Custom_WpForo_Form","Create/Save Custom Form");
-    //Submit the form with the added data synchronously
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", form.action, false);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-          // Request was successful
-          if (xhr.responseURL && xhr.responseURL !== form.action) {
-            // Redirect occurred, handle the redirect URL
-            console.log("Redirect URL:", xhr.responseURL);
-            // You can redirect the user using JavaScript if needed
-            window.location.href = xhr.responseURL;
-          } else {
-            // No redirect occurred, do something else
-            console.log("Form submitted successfully");
-          }
-        } else {
-          // Request failed, handle the error
-          console.error("Form submission failed with status", xhr.status);
+    catch(err){
+        showToast(0, "Error", err);
+        return
+    }
+    //Check if there is a query parameter edit_form
+    const urlParams = new URLSearchParams(window.location.search);
+    const formId = urlParams.get("edit_form");
+    if(formId == null){
+        return;
+    }
+    //Get the form data
+    getFormData(formId);
+}
+/**
+ * Get the data for the form that is being edited.
+ * @param {number} formId ID of the form to edit
+ */
+async function getFormData(formId){
+    const dataRequest = new XMLHttpRequest();
+    dataRequest.open("GET", WPF_CUSTOM_API.baseUrl + "/form?form_id=" + formId, true);
+    dataRequest.setRequestHeader("Content-Type", "application/json");
+    dataRequest.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
+    dataRequest.onload = function () {
+        if (dataRequest.status !== 200) {
+            showToast(0, "Error", dataRequest.responseText);
+            return null;
         }
-      };
-    xhr.send(formData);
+        const data = JSON.parse(dataRequest.responseText);
+        /** @type {HTMLInputElement} */
+        const formNameInput = document.getElementById("form_name");
+        formNameInput.value = data['form_name'];
+        const formFields = data['form_fields'];
+        for(let i = 0; i < formFields.length; i++){
+            const fieldId = formFields[i]['id'];
+            addFieldFromId(fieldId);
+        }
+    }
+    dataRequest.onerror = function () {
+        showToast(0, "Error", dataRequest.responseText);
+        return null;
+    }
+    dataRequest.send();
 }
 /**
- * @param {object|string} data 
- */
-function setData(data){
-    if (typeof data === "string") {
-        data = JSON.parse(data);
+ * Save the form
+ * If the form is new, send a POST request
+ * If the form is being edited, send a PUT request
+*/
+async function saveForm(){
+    const urlParams = new URLSearchParams(window.location.search);
+    const formId = urlParams.get("edit_form");
+    if(formId === null){
+        saveNewForm();
     }
-    const formName = data.form_name;
-    const formFields = data.form_fields;
-    
-    //Set the form name
-    /**
-     * @type {HTMLInputElement}
-     * */
-    const formNameInput = document.getElementById("form_name");
-    formNameInput.value = formName;
-    for(let i = 0; i < formFields.length; i++){
-        const field = formFields[i];
-        const id = field.ID;
-        const name = field.Name;
-        const type = field.Type;
-        addField(id,name, type);
+    else{
+        replaceForm(formId);
     }
 }
-function presentMessages(){
-    //Check if toast container exists
-    if (document.getElementById('toastCont') === null) {
-        createToast();
-    }
-    //Check if query string contains messages
-    //Possible query string args:
-    /**
-     * 'custom_form_saved',
-     * 'custom_form_deleted',
-    */
-    // 0 is fail, 1 is success
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const form_saved = urlParams.get('custom_form_saved');
-    const form_deleted = urlParams.get('custom_form_deleted');
-    if(form_saved == 1){
-        showToast(1,"Success","Form saved successfully");
-    }
-    else if(form_saved == 0){
-        showToast(0,"Error","Form could not be saved");
-    }
-    else if(form_deleted == 1){
-        showToast(1,"Success","Form deleted successfully")
-    }
-    else if(form_deleted == 0){
-        showToast(0,"Error","Form could not be deleted")
-    }
-}
-// Execute on page load
-presentMessages();
 /**
- * @type {HTMLButtonElement}
+ * Save a new form using a POST request
  */
+async function saveNewForm(){
+    const formName = document.getElementById("form_name").value;
+    const formFields = getFormFields();
+    const data = {
+        "form_name": formName,
+        "form_fields": formFields
+    }
+    const saveReq = new XMLHttpRequest();
+    saveReq.open("POST", WPF_CUSTOM_API.baseUrl + "/form", true);
+    saveReq.setRequestHeader("Content-Type", "application/json");
+    saveReq.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
+    saveReq.onload = function () {
+        if (saveReq.status !== 200) {
+            showToast(0, "Error", saveReq.responseText);
+            return;
+        }
+        showToast(1, "Success", saveReq.responseText);
+    }
+    saveReq.onerror = function () {
+        showToast(0, "Error", saveReq.responseText);
+    }
+    saveReq.send(JSON.stringify(data));
+}
+/**
+ * Replace a form using a PUT request. This is used when editing a form.
+ * @param {number} formId The id of the form to replace
+ */
+async function replaceForm(formId){
+    const formName = document.getElementById("form_name").value;
+    const formFields = getFormFields();
+    const data = {
+        "form_id": formId,
+        "form_name": formName,
+        "form_fields": formFields
+    };
+    const saveReq = new XMLHttpRequest();
+    saveReq.open("PUT", WPF_CUSTOM_API.baseUrl + "/form", true);
+    saveReq.setRequestHeader("Content-Type", "application/json");
+    saveReq.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
+    saveReq.onload = function () {
+        if (saveReq.status !== 200) {
+            showToast(0, "Error", saveReq.responseText);
+            return;
+        }
+        showToast(1, "Success", saveReq.responseText);
+    }
+    saveReq.onerror = function () {
+        showToast(0, "Error", saveReq.responseText);
+    }
+    saveReq.send(JSON.stringify(data));
+}
+/**
+ * Get the ids of the fields in the table.
+ * This is used when saving a form.
+ * @returns {Array<number>} An array of field ids
+ */
+function getFormFields(){
+    const tableBody = document.getElementById("fieldsTableBody");
+    const rows = tableBody.rows;
+    const fields = [];
+    for(let i = 0; i < rows.length; i++){
+        const row = rows[i];
+        const fieldId = row.cells[0].innerHTML;
+        fields.push(fieldId);
+    }
+    return fields;
+}
+/**
+ * Get all fields from the database and add them to the select element.
+ * @returns {Promise} A promise that resolves when all fields are loaded
+ */
+function getAllFields() {
+    return new Promise((resolve, reject) => {
+        const dataRequest = new XMLHttpRequest();
+        dataRequest.open("GET", WPF_CUSTOM_API.baseUrl + "/fields", true);
+        dataRequest.setRequestHeader("Content-Type", "application/json");
+        dataRequest.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
+
+        dataRequest.onload = function () {
+            if (dataRequest.status !== 200) {
+                showToast(0, "Error", dataRequest.responseText);
+                reject(dataRequest.responseText);  // Reject the promise
+                return;
+            }
+            const data = JSON.parse(dataRequest.responseText);
+            const selectElem = document.getElementById("fieldSelect");
+            for (let i = 0; i < data.length; i++) {
+                const field = data[i];
+                const newOption = document.createElement("option");
+                newOption.value = field['id'];
+                newOption.text = field['field_name'] + " : " + field['field_type'];
+                selectElem.add(newOption);
+            }
+            resolve();  // Resolve the promise
+        }
+
+        dataRequest.onerror = function () {
+            showToast(0, "Error", dataRequest.responseText);
+            reject(dataRequest.responseText);  // Reject the promise
+        }
+
+        dataRequest.send();
+    });
+}
+initPage();
+/** @type {HTMLButtonElement} */
 const addFieldBtn = document.getElementById("addFieldBtn");
 addFieldBtn.addEventListener("click", addSelectedField);
-/**
- * @type {HTMLFormElement}
- */
-const form = document.getElementById("creationForm");
-form.addEventListener("submit", function(event){
-    event.preventDefault();
-    submitForm(form);
-});
+/** @type {HTMLButtonElement} */
+const saveFormBtn = document.getElementById("saveFormBtn");
+saveFormBtn.addEventListener("click", saveForm);
