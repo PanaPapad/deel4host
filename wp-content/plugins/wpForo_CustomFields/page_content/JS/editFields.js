@@ -1,4 +1,46 @@
-function setFieldValues(fieldValues) {
+/**
+ * Initialize the page
+ */
+async function initPage(){
+    //Check if field id exists in query string
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const fieldId = urlParams.get('field_id');
+    if (fieldId === null) {
+        return;
+    }
+    presentLoadingScreen();
+    //Get field values
+    getFieldValues(fieldId);
+}
+/**
+ * Fetch the field values from the database
+ * @param {number} fieldId 
+ */
+async function getFieldValues(fieldId) {
+    const fieldDataRequest = new XMLHttpRequest();
+    fieldDataRequest.open("GET", WPF_CUSTOM_API.baseUrl + `/field?field_id=${fieldId}`, true);
+    fieldDataRequest.setRequestHeader("Content-Type", "application/json");
+    fieldDataRequest.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
+    fieldDataRequest.onload = function () {
+        //Any code other than 200 is an error
+        if (this.status !== 200) {
+            showToast(0, "Error", "Could not fetch field data.");
+            return;
+        }
+        const fieldData = JSON.parse(this.response);
+        setFieldValues(fieldData);
+    }
+    fieldDataRequest.onerror = function () {
+        showToast(0, "Error", "Could not fetch field data.");
+    }
+    fieldDataRequest.send();
+}
+/**
+ * Set the input values of the form
+ * @param {object} fieldValues 
+ */
+async function setFieldValues(fieldValues) {
     //convert to json if needed
     if (typeof fieldValues === "string") {
         fieldValues = JSON.parse(fieldValues);
@@ -41,36 +83,11 @@ function setFieldValues(fieldValues) {
         }
     }
     updateForm();
+    dismissLoadingScreen();
 }
-function presentMessages() {
-    //Check if toast container exists
-    if (document.getElementById('toastCont') === null) {
-        createToast();
-    }
-    //Check if query string contains messages
-    //Possible query string args:
-    /**
-     * 'custom_field_saved',
-     * 'custom_field_deleted',
-     */
-    // 0 is fail, 1 is success
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const customFieldSaved = urlParams.get('custom_field_saved');
-    const customFieldDeleted = urlParams.get('custom_field_deleted');
-    if (customFieldSaved === "1") {
-        showToast(1, "Success", "Custom field saved successfully.");
-    }
-    else if (customFieldSaved === "0") {
-        showToast(0, "Error", "Custom field could not be saved.");
-    }
-    else if (customFieldDeleted === "1") {
-        showToast(1, "Success", "Custom field deleted successfully.");
-    }
-    else if (customFieldDeleted === "0") {
-        showToast(0, "Error", "Custom field could not be deleted.");
-    }
-}
+/**
+ * Update the form based on the field type
+ */
 function updateForm() {
     //Get field type
     const fieldType = fieldTypeSelect.value;
@@ -90,19 +107,100 @@ function updateForm() {
     }
     //Check if field type is checkbox
     if (fieldType === "checkbox") {
-        fieldDefault.disabled = true;
         fieldPlaceholder.disabled = true;
         fieldRequired.disabled = true;
     }
     else {
-        fieldDefault.disabled = false;
         fieldPlaceholder.disabled = false;
         fieldRequired.disabled = false;
     }
 }
+/**
+ * Save the field to the Database.
+ * If this is an edit the field is updated.
+ */
+function saveField(){
+    //Get field id
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const fieldId = urlParams.get('field_id');
+    //Get field values
+    const fieldValues = getInputValues();
+    //Check if field id exists
+    if (fieldId === null) {
+        //Create new field
+        saveNewField(fieldValues);
+    }
+    else {
+        //Update field
+        updateField(fieldId, fieldValues);
+    }
+}
+/**
+ * 
+ * @param {object} fieldValues 
+ */
+function saveNewField(fieldValues){
+    //Send request
+    const fieldDataRequest = new XMLHttpRequest();
+    fieldDataRequest.open("POST", WPF_CUSTOM_API.baseUrl + "/field", true);
+    fieldDataRequest.setRequestHeader("Content-Type", "application/json");
+    fieldDataRequest.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
+    fieldDataRequest.onload = function () {
+        //Any code other than 200 is an error
+        if (this.status !== 200) {
+            showToast(0, "Error", "Could not create field.");
+            return;
+        }
+        showToast(1, "Success", "Field created successfully.");
+    }
+    fieldDataRequest.onerror = function () {
+        showToast(0, "Error", "Creation request failed.");
+    }
+    fieldDataRequest.send(JSON.stringify(fieldValues));
+}
+/**
+ * 
+ * @param {number}} fieldId 
+ * @param {object} fieldValues 
+ */
+function updateField(fieldId, fieldValues){
+    //Send request
+    const fieldDataRequest = new XMLHttpRequest();
+    fieldDataRequest.open("PUT", WPF_CUSTOM_API.baseUrl + `/field?field_id=${fieldId}`, true);
+    fieldDataRequest.setRequestHeader("Content-Type", "application/json");
+    fieldDataRequest.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
+    fieldDataRequest.onload = function () {
+        //Any code other than 200 is an error
+        if (this.status !== 200) {
+            showToast(0, "Error", "Could not update field.");
+            return;
+        }
+        showToast(1, "Success", "Field updated successfully.");
+    }
+    fieldDataRequest.onerror = function(){
+        showToast(0, "Error", "Update request failed.");
+    }
+    //Append field id to field values
+    fieldValues.field_id = fieldId;
+    fieldDataRequest.send(JSON.stringify(fieldValues));
+}
+function getInputValues(){
+    //Get field values
+    const fieldValues = {
+        field_name: document.getElementById("field_name").value,
+        field_label: document.getElementById("field_label").value,
+        field_type: document.getElementById("field_type").value,
+        field_options: document.getElementById("field_options").value,
+        field_placeholder: document.getElementById("field_placeholder").value,
+        field_required: document.getElementById("field_required").checked,
+        field_fa_icon : document.getElementById("field_fa_icon").value,
+    }
+    return fieldValues;
+}
+initPage();
 const submitBtn = document.getElementById("submitBtn");
 const fieldTypeSelect = document.getElementById("field_type");
-//submitBtn.addEventListener("click", submitForm);
+submitBtn.addEventListener("click", saveField);
 fieldTypeSelect.addEventListener("change", updateForm);
-presentMessages();
 

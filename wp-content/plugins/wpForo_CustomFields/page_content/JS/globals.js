@@ -160,6 +160,9 @@ function presentLoadingScreen(){
 }
 function dismissLoadingScreen(){
     const loadingScreen = document.getElementById("loadingScreen");
+    if(!loadingScreen){
+        return;
+    }
     loadingScreen.remove();
 }
 createToast();

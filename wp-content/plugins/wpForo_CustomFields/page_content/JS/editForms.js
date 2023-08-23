@@ -238,7 +238,7 @@ function getFormFields(){
 function getAllFields() {
     return new Promise((resolve, reject) => {
         const dataRequest = new XMLHttpRequest();
-        dataRequest.open("GET", WPF_CUSTOM_API.baseUrl + "/fields", true);
+        dataRequest.open("GET", WPF_CUSTOM_API.baseUrl + "/field", true);
         dataRequest.setRequestHeader("Content-Type", "application/json");
         dataRequest.setRequestHeader("X-WP-Nonce", WPF_CUSTOM_API.nonce);
 
