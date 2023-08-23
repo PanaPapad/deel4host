@@ -151,5 +151,16 @@ async function deleteRow(rowElement){
     });
     rowElement.classList.add("fadeOut");
 }
+function presentLoadingScreen(){
+    const loadingScreen = document.createElement('div');
+    loadingScreen.id = "loadingScreen";
+    loadingScreen.classList.add("loadingScreen");
+    loadingScreen.innerHTML = "<div class='spinner-border' role='status'><span class='visually-hidden'>Loading...</span></div>";
+    document.body.appendChild(loadingScreen);
+}
+function dismissLoadingScreen(){
+    const loadingScreen = document.getElementById("loadingScreen");
+    loadingScreen.remove();
+}
 createToast();
 createModal();

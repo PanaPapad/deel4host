@@ -96,18 +96,20 @@ function deleteField(btn){
  * Initialize the Page
  */
 async function initPage(){
+    presentLoadingScreen();
     //Get all fields
     try{
         await getAllFields();
     }
     catch(err){
-        showToast(0, "Error", err);
+        showToast(0, "Error", "Failed to get fields");
         return
     }
     //Check if there is a query parameter edit_form
     const urlParams = new URLSearchParams(window.location.search);
     const formId = urlParams.get("edit_form");
     if(formId == null){
+        dismissLoadingScreen();
         return;
     }
     //Get the form data
@@ -136,6 +138,7 @@ async function getFormData(formId){
             const fieldId = formFields[i]['id'];
             addFieldFromId(fieldId);
         }
+        dismissLoadingScreen();
     }
     dataRequest.onerror = function () {
         showToast(0, "Error", dataRequest.responseText);

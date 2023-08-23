@@ -18,3 +18,15 @@ a.disableClick{
 select.form-control{
     max-width: 100%;
 }
+.loadingScreen{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(125, 125, 125, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
