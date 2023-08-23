@@ -145,7 +145,7 @@ function go_to_attachFormPage(){
  */
 function go_to_page($page){
     include_once plugin_dir_path(__FILE__).'Globals.php';
-    include_once $GLOBALS['page_functions_path'] . $page . '.php';
+    //include_once $GLOBALS['page_functions_path'] . $page . '.php';
     include_once $GLOBALS['page_content_path'] . $page . '.php';
     exit;
 }
