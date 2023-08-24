@@ -59,7 +59,8 @@ function create_field_table(){
         field_default_value VARCHAR(255) NOT NULL DEFAULT '',
         field_required BOOLEAN NOT NULL,
         field_options VARCHAR(255) NOT NULL DEFAULT '',
-        PRIMARY KEY (id)
+        PRIMARY KEY (id),
+        UNIQUE KEY (field_name)
     ) $charset_collate;";
     dbDelta($fields_table_sql);
 }
@@ -72,7 +73,7 @@ function create_form_table(){
     $forms_table_sql = "CREATE TABLE $forms_table_name (
         id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
         form_name VARCHAR(255) NOT NULL,
-        PRIMARY KEY (id)
+        PRIMARY KEY (id), UNIQUE KEY (form_name)
     ) $charset_collate;";
     dbDelta($forms_table_sql);
 }
