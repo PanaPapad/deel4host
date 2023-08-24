@@ -37,10 +37,10 @@ function check_for_tables(){
     if(!$forum_form_table_exists){
         create_forum_form_table();
     }
-    $custom_post_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$custom_post_table_name'") == $custom_post_table_name;
+    /*$custom_post_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$custom_post_table_name'") == $custom_post_table_name;
     if(!$custom_post_table_exists){
         create_post_table();
-    }
+    }*/
 }
 function create_field_table(){
     global $wpdb;
