@@ -96,7 +96,7 @@ function deleteField(btn){
  * Initialize the Page
  */
 async function initPage(){
-    presentLoadingScreen();
+    
     //Get all fields
     try{
         await getAllFields();
@@ -112,6 +112,7 @@ async function initPage(){
         dismissLoadingScreen();
         return;
     }
+    presentLoadingScreen();
     //Get the form data
     getFormData(formId);
 }
