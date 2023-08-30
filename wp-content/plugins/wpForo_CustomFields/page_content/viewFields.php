@@ -29,7 +29,7 @@ function listCreatedFields() {
         $field_description = $custom_fields[$i]->field_description;
         $field_required = $custom_fields[$i]->field_required;
         //Cast to string
-        $field_required = $field_required == '0' ? "Yes" : "No";
+        $field_required = $field_required == '1' ? "Yes" : "No";
         $field_default = $custom_fields[$i]->field_default_value;
         $field_options = $custom_fields[$i]->field_options;
 
