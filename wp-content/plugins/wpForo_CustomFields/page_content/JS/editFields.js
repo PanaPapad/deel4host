@@ -108,7 +108,7 @@ function updateForm() {
     //Check if field type is checkbox
     if (fieldType === "checkbox") {
         fieldPlaceholder.disabled = true;
-        fieldRequired.disabled = true;
+        //fieldRequired.disabled = true;
     }
     else {
         fieldPlaceholder.disabled = false;

@@ -482,7 +482,7 @@ function replace_field(WP_REST_Request $request){
     $field_label = sanitize_text_field($data_array['field_label']);
     $field_description = sanitize_textarea_field($data_array['field_description']);
     $field_default = sanitize_text_field($data_array['field_default']);
-    $field_required = isset($data_array['field_required']) ? 1 : 0;
+    $field_required = $data_array['field_required'] ?? 0;
     $field_options = sanitize_text_field($data_array['field_options']);
     $field_placeholder = sanitize_text_field($data_array['field_placeholder']);
     $field_fa_icon = sanitize_text_field($data_array['field_fa_icon']);
